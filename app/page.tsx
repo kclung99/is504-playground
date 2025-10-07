@@ -34,11 +34,28 @@ function PostCard({ post, onLike, onReply, isOP = false, isLiked = false, showMe
     return '(very polite)';
   };
 
+  const getToneColor = (tau: number) => {
+    // Negative (polite) = green, Positive (harsh) = red
+    if (tau > 0.3) return 'bg-red-200 text-red-800';
+    if (tau > 0.1) return 'bg-red-100 text-red-700';
+    if (tau > -0.1) return 'bg-gray-100 text-gray-700';
+    if (tau > -0.3) return 'bg-green-100 text-green-700';
+    return 'bg-green-200 text-green-800';
+  };
+
   const getEngagementLabel = (epsilon: number) => {
     if (epsilon > 0.7) return '(high effort)';
     if (epsilon > 0.5) return '(medium effort)';
     if (epsilon > 0.3) return '(low effort)';
     return '(minimal effort)';
+  };
+
+  const getEngagementColor = (epsilon: number) => {
+    // Higher engagement = more intense blue
+    if (epsilon > 0.7) return 'bg-blue-200 text-blue-800';
+    if (epsilon > 0.5) return 'bg-blue-100 text-blue-700';
+    if (epsilon > 0.3) return 'bg-blue-50 text-blue-600';
+    return 'bg-gray-100 text-gray-600';
   };
 
   const getOpinionLabel = (opinion: number) => {
@@ -49,6 +66,17 @@ function PostCard({ post, onLike, onReply, isOP = false, isLiked = false, showMe
     if (opinion > -0.3) return '(mildly opposing)';
     if (opinion > -0.7) return '(opposing)';
     return '(strongly opposing)';
+  };
+
+  const getOpinionColor = (opinion: number) => {
+    // Positive (supporting) = green, Negative (opposing) = red
+    if (opinion > 0.7) return 'bg-green-200 text-green-800';
+    if (opinion > 0.3) return 'bg-green-100 text-green-700';
+    if (opinion > 0.1) return 'bg-green-50 text-green-600';
+    if (opinion > -0.1) return 'bg-gray-100 text-gray-700';
+    if (opinion > -0.3) return 'bg-red-50 text-red-600';
+    if (opinion > -0.7) return 'bg-red-100 text-red-700';
+    return 'bg-red-200 text-red-800';
   };
 
   if (isOP) {
@@ -66,13 +94,13 @@ function PostCard({ post, onLike, onReply, isOP = false, isLiked = false, showMe
             </div>
             {showMetrics && (
               <div className="flex gap-2">
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getToneColor(post.tau)}`}>
                   Tone: {post.tau.toFixed(2)} {getToneLabel(post.tau)}
                 </span>
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getEngagementColor(post.epsilon)}`}>
                   Engagement: {post.epsilon.toFixed(2)} {getEngagementLabel(post.epsilon)}
                 </span>
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getOpinionColor(post.opinion)}`}>
                   Opinion: {post.opinion.toFixed(2)} {getOpinionLabel(post.opinion)}
                 </span>
               </div>
@@ -119,13 +147,13 @@ function PostCard({ post, onLike, onReply, isOP = false, isLiked = false, showMe
               <>
                 <span className="text-gray-400 text-xs">•</span>
                 <div className="flex gap-1">
-                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getToneColor(post.tau)}`}>
                     Tone: {post.tau.toFixed(2)} {getToneLabel(post.tau)}
                   </span>
-                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getEngagementColor(post.epsilon)}`}>
                     Engagement: {post.epsilon.toFixed(2)} {getEngagementLabel(post.epsilon)}
                   </span>
-                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getOpinionColor(post.opinion)}`}>
                     Opinion: {post.opinion.toFixed(2)} {getOpinionLabel(post.opinion)}
                   </span>
                 </div>
@@ -172,6 +200,31 @@ interface ReplyChooserProps {
 function ReplyChooser({ isOpen, onClose, onSelect, options, showMetrics = true }: ReplyChooserProps) {
   if (!isOpen) return null;
 
+  const getToneColor = (tau: number) => {
+    if (tau > 0.3) return 'bg-red-200 text-red-800';
+    if (tau > 0.1) return 'bg-red-100 text-red-700';
+    if (tau > -0.1) return 'bg-gray-100 text-gray-700';
+    if (tau > -0.3) return 'bg-green-100 text-green-700';
+    return 'bg-green-200 text-green-800';
+  };
+
+  const getEngagementColor = (epsilon: number) => {
+    if (epsilon > 0.7) return 'bg-blue-200 text-blue-800';
+    if (epsilon > 0.5) return 'bg-blue-100 text-blue-700';
+    if (epsilon > 0.3) return 'bg-blue-50 text-blue-600';
+    return 'bg-gray-100 text-gray-600';
+  };
+
+  const getOpinionColor = (opinion: number) => {
+    if (opinion > 0.7) return 'bg-green-200 text-green-800';
+    if (opinion > 0.3) return 'bg-green-100 text-green-700';
+    if (opinion > 0.1) return 'bg-green-50 text-green-600';
+    if (opinion > -0.1) return 'bg-gray-100 text-gray-700';
+    if (opinion > -0.3) return 'bg-red-50 text-red-600';
+    if (opinion > -0.7) return 'bg-red-100 text-red-700';
+    return 'bg-red-200 text-red-800';
+  };
+
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 p-4">
       <div className="max-w-2xl mx-auto">
@@ -191,13 +244,10 @@ function ReplyChooser({ isOpen, onClose, onSelect, options, showMetrics = true }
               onClick={() => onSelect(option)}
               className="text-left p-4 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
             >
-              <div className="flex justify-between items-start mb-2">
-                <span className="font-medium text-blue-600">{option.label}</span>
-              </div>
               <p className="text-gray-700 text-sm mb-3">{option.text}</p>
               {showMetrics && (
                 <div className="flex gap-2">
-                  <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-600">
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${getToneColor(option.tau)}`}>
                     Tone: {option.tau.toFixed(2)} {(() => {
                       const tau = option.tau;
                       if (tau > 0.3) return '(harsh)';
@@ -207,7 +257,7 @@ function ReplyChooser({ isOpen, onClose, onSelect, options, showMetrics = true }
                       return '(very polite)';
                     })()}
                   </span>
-                  <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-600">
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${getEngagementColor(option.epsilon)}`}>
                     Engagement: {option.epsilon.toFixed(2)} {(() => {
                       const epsilon = option.epsilon;
                       if (epsilon > 0.7) return '(high effort)';
@@ -216,7 +266,7 @@ function ReplyChooser({ isOpen, onClose, onSelect, options, showMetrics = true }
                       return '(minimal effort)';
                     })()}
                   </span>
-                  <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-600">
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${getOpinionColor(option.opinion)}`}>
                     Opinion: {option.opinion.toFixed(2)} {(() => {
                       const opinion = option.opinion;
                       if (opinion > 0.7) return '(strongly supporting)';

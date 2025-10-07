@@ -22,9 +22,10 @@ interface PostCardProps {
   onReply: () => void;
   isOP?: boolean;
   isLiked?: boolean;
+  showMetrics?: boolean;
 }
 
-function PostCard({ post, onLike, onReply, isOP = false, isLiked = false }: PostCardProps) {
+function PostCard({ post, onLike, onReply, isOP = false, isLiked = false, showMetrics = true }: PostCardProps) {
   const getToneLabel = (tau: number) => {
     if (tau > 0.3) return '(harsh)';
     if (tau > 0.1) return '(assertive)';
@@ -63,17 +64,19 @@ function PostCard({ post, onLike, onReply, isOP = false, isLiked = false }: Post
               <span className="text-gray-500 text-sm">•</span>
               <span className="text-gray-500 text-sm">Thread starter</span>
             </div>
-            <div className="flex gap-2">
-              <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                Tone: {post.tau.toFixed(2)} {getToneLabel(post.tau)}
-              </span>
-              <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                Engagement: {post.epsilon.toFixed(2)} {getEngagementLabel(post.epsilon)}
-              </span>
-              <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                Opinion: {post.opinion.toFixed(2)} {getOpinionLabel(post.opinion)}
-              </span>
-            </div>
+            {showMetrics && (
+              <div className="flex gap-2">
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                  Tone: {post.tau.toFixed(2)} {getToneLabel(post.tau)}
+                </span>
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                  Engagement: {post.epsilon.toFixed(2)} {getEngagementLabel(post.epsilon)}
+                </span>
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                  Opinion: {post.opinion.toFixed(2)} {getOpinionLabel(post.opinion)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -112,18 +115,22 @@ function PostCard({ post, onLike, onReply, isOP = false, isLiked = false }: Post
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
             <span className="font-medium text-gray-900 text-sm">Reply</span>
-            <span className="text-gray-400 text-xs">•</span>
-            <div className="flex gap-1">
-              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                Tone: {post.tau.toFixed(2)} {getToneLabel(post.tau)}
-              </span>
-              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                Engagement: {post.epsilon.toFixed(2)} {getEngagementLabel(post.epsilon)}
-              </span>
-              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                Opinion: {post.opinion.toFixed(2)} {getOpinionLabel(post.opinion)}
-              </span>
-            </div>
+            {showMetrics && (
+              <>
+                <span className="text-gray-400 text-xs">•</span>
+                <div className="flex gap-1">
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                    Tone: {post.tau.toFixed(2)} {getToneLabel(post.tau)}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                    Engagement: {post.epsilon.toFixed(2)} {getEngagementLabel(post.epsilon)}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                    Opinion: {post.opinion.toFixed(2)} {getOpinionLabel(post.opinion)}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
 
           <p className="text-gray-800 text-sm mb-3 leading-relaxed">{post.text}</p>
@@ -159,9 +166,10 @@ interface ReplyChooserProps {
   onClose: () => void;
   onSelect: (option: ReplyOption) => void;
   options: ReplyOption[];
+  showMetrics?: boolean;
 }
 
-function ReplyChooser({ isOpen, onClose, onSelect, options }: ReplyChooserProps) {
+function ReplyChooser({ isOpen, onClose, onSelect, options, showMetrics = true }: ReplyChooserProps) {
   if (!isOpen) return null;
 
   return (
@@ -187,39 +195,41 @@ function ReplyChooser({ isOpen, onClose, onSelect, options }: ReplyChooserProps)
                 <span className="font-medium text-blue-600">{option.label}</span>
               </div>
               <p className="text-gray-700 text-sm mb-3">{option.text}</p>
-              <div className="flex gap-2">
-                <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-600">
-                  Tone: {option.tau.toFixed(2)} {(() => {
-                    const tau = option.tau;
-                    if (tau > 0.3) return '(harsh)';
-                    if (tau > 0.1) return '(assertive)';
-                    if (tau > -0.1) return '(neutral)';
-                    if (tau > -0.3) return '(polite)';
-                    return '(very polite)';
-                  })()}
-                </span>
-                <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-600">
-                  Engagement: {option.epsilon.toFixed(2)} {(() => {
-                    const epsilon = option.epsilon;
-                    if (epsilon > 0.7) return '(high effort)';
-                    if (epsilon > 0.5) return '(medium effort)';
-                    if (epsilon > 0.3) return '(low effort)';
-                    return '(minimal effort)';
-                  })()}
-                </span>
-                <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-600">
-                  Opinion: {option.opinion.toFixed(2)} {(() => {
-                    const opinion = option.opinion;
-                    if (opinion > 0.7) return '(strongly supporting)';
-                    if (opinion > 0.3) return '(supporting)';
-                    if (opinion > 0.1) return '(mildly supporting)';
-                    if (opinion > -0.1) return '(neutral)';
-                    if (opinion > -0.3) return '(mildly opposing)';
-                    if (opinion > -0.7) return '(opposing)';
-                    return '(strongly opposing)';
-                  })()}
-                </span>
-              </div>
+              {showMetrics && (
+                <div className="flex gap-2">
+                  <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-600">
+                    Tone: {option.tau.toFixed(2)} {(() => {
+                      const tau = option.tau;
+                      if (tau > 0.3) return '(harsh)';
+                      if (tau > 0.1) return '(assertive)';
+                      if (tau > -0.1) return '(neutral)';
+                      if (tau > -0.3) return '(polite)';
+                      return '(very polite)';
+                    })()}
+                  </span>
+                  <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-600">
+                    Engagement: {option.epsilon.toFixed(2)} {(() => {
+                      const epsilon = option.epsilon;
+                      if (epsilon > 0.7) return '(high effort)';
+                      if (epsilon > 0.5) return '(medium effort)';
+                      if (epsilon > 0.3) return '(low effort)';
+                      return '(minimal effort)';
+                    })()}
+                  </span>
+                  <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-600">
+                    Opinion: {option.opinion.toFixed(2)} {(() => {
+                      const opinion = option.opinion;
+                      if (opinion > 0.7) return '(strongly supporting)';
+                      if (opinion > 0.3) return '(supporting)';
+                      if (opinion > 0.1) return '(mildly supporting)';
+                      if (opinion > -0.1) return '(neutral)';
+                      if (opinion > -0.3) return '(mildly opposing)';
+                      if (opinion > -0.7) return '(opposing)';
+                      return '(strongly opposing)';
+                    })()}
+                  </span>
+                </div>
+              )}
             </button>
           ))}
         </div>
@@ -240,6 +250,7 @@ interface ThreadViewProps {
   onToggleShowReplies: (postId: string) => void;
   isComparison?: boolean;
   side?: 'A' | 'B';
+  showMetrics?: boolean;
 }
 
 function ThreadView({
@@ -253,7 +264,8 @@ function ThreadView({
   onToggleShowMore,
   onToggleShowReplies,
   isComparison = false,
-  side
+  side,
+  showMetrics = true
 }: ThreadViewProps) {
   const topLevelPosts = posts.filter(post => post.depth <= 1);
   const sortedTopLevel = topLevelPosts.sort((a, b) => {
@@ -280,9 +292,11 @@ function ThreadView({
             <p className="text-xs text-gray-500 mt-1">
               {threadData.description || `Standard view`}
             </p>
-            <p className="text-xs text-gray-500">
-              Avg Tone: {avgTau.toFixed(2)} | Avg Engagement: {avgEpsilon.toFixed(2)}
-            </p>
+            {showMetrics && (
+              <p className="text-xs text-gray-500">
+                Avg Tone: {avgTau.toFixed(2)} | Avg Engagement: {avgEpsilon.toFixed(2)}
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -296,6 +310,7 @@ function ThreadView({
               onReply={() => onOpenReply(post.id, side)}
               isOP={post.depth === 0}
               isLiked={likedPosts.has(post.id)}
+              showMetrics={showMetrics}
             />
 
             {post.depth === 1 && (
@@ -326,6 +341,7 @@ function ThreadView({
                             onLike={() => onLike(child.id)}
                             onReply={() => onOpenReply(child.id, side)}
                             isLiked={likedPosts.has(child.id)}
+                            showMetrics={showMetrics}
                           />
                         </div>
                       ))}
@@ -355,13 +371,7 @@ function ThreadView({
 export default function ToneEngagementExperiment() {
   const [currentThreadIndex, setCurrentThreadIndex] = useState(0);
   const [isComparisonMode, setIsComparisonMode] = useState(false);
-  const [posts, setPosts] = useState<Record<string, Post[]>>(() => {
-    const initial: Record<string, Post[]> = {};
-    mockData.threads.forEach(thread => {
-      initial[thread.threadId] = [thread.op, ...thread.seeded];
-    });
-    return initial;
-  });
+  const [showMetrics, setShowMetrics] = useState(false);
   const [variantPosts, setVariantPosts] = useState<Record<string, Record<'A' | 'B', Post[]>>>(() => {
     const initial: Record<string, Record<'A' | 'B', Post[]>> = {};
     mockData.threadVariants.forEach(variant => {
@@ -382,15 +392,14 @@ export default function ToneEngagementExperiment() {
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
 
   const currentThread = mockData.threads[currentThreadIndex];
-  const currentPosts = posts[currentThread.threadId] || [];
+  const currentVariantPosts = variantPosts[currentThread.threadId] || { A: [], B: [] };
+  const currentPosts = currentVariantPosts.A; // Always use variant A for single view
   const hasUserReplied = (userReplies[currentThread.threadId] || 0) > 0;
 
   // Get variant data for comparison mode
   const getVariantData = (threadId: string, variant: 'A' | 'B'): ThreadVariant => {
     return mockData.threadVariants.find(v => v.threadId === threadId && v.variant === variant)!;
   };
-
-  const currentVariantPosts = variantPosts[currentThread.threadId] || { A: [], B: [] };
 
   const log = useCallback((entry: Omit<LogEntry, 'ts'>) => {
     const logEntry = { ...entry, ts: Date.now() };
@@ -423,35 +432,23 @@ export default function ToneEngagementExperiment() {
   const handleLike = useCallback((postId: string) => {
     const isCurrentlyLiked = likedPosts.has(postId);
 
-    setPosts(prev => ({
+    setVariantPosts(prev => ({
       ...prev,
-      [currentThread.threadId]: prev[currentThread.threadId].map(post =>
-        post.id === postId ? {
-          ...post,
-          likes: isCurrentlyLiked ? post.likes - 1 : post.likes + 1
-        } : post
-      )
+      [currentThread.threadId]: {
+        A: prev[currentThread.threadId].A.map(post =>
+          post.id === postId ? {
+            ...post,
+            likes: isCurrentlyLiked ? post.likes - 1 : post.likes + 1
+          } : post
+        ),
+        B: prev[currentThread.threadId].B.map(post =>
+          post.id === postId ? {
+            ...post,
+            likes: isCurrentlyLiked ? post.likes - 1 : post.likes + 1
+          } : post
+        )
+      }
     }));
-
-    if (isComparisonMode) {
-      setVariantPosts(prev => ({
-        ...prev,
-        [currentThread.threadId]: {
-          A: prev[currentThread.threadId].A.map(post =>
-            post.id === postId ? {
-              ...post,
-              likes: isCurrentlyLiked ? post.likes - 1 : post.likes + 1
-            } : post
-          ),
-          B: prev[currentThread.threadId].B.map(post =>
-            post.id === postId ? {
-              ...post,
-              likes: isCurrentlyLiked ? post.likes - 1 : post.likes + 1
-            } : post
-          )
-        }
-      }));
-    }
 
     setLikedPosts(prev => {
       const newSet = new Set(prev);
@@ -519,8 +516,7 @@ export default function ToneEngagementExperiment() {
   const handleSelectReply = useCallback((option: ReplyOption) => {
     if (!replyChooser.parentId) return;
 
-    const postsToUse = isComparisonMode ? currentVariantPosts.A : currentPosts;
-    const parentPost = postsToUse.find(p => p.id === replyChooser.parentId);
+    const parentPost = currentPosts.find(p => p.id === replyChooser.parentId);
     const newDepth = parentPost ? parentPost.depth + 1 : 1;
 
     const newPost: Post = {
@@ -534,20 +530,13 @@ export default function ToneEngagementExperiment() {
       depth: newDepth
     };
 
-    if (isComparisonMode) {
-      setVariantPosts(prev => ({
-        ...prev,
-        [currentThread.threadId]: {
-          A: [...prev[currentThread.threadId].A, newPost],
-          B: [...prev[currentThread.threadId].B, newPost]
-        }
-      }));
-    } else {
-      setPosts(prev => ({
-        ...prev,
-        [currentThread.threadId]: [...prev[currentThread.threadId], newPost]
-      }));
-    }
+    setVariantPosts(prev => ({
+      ...prev,
+      [currentThread.threadId]: {
+        A: [...prev[currentThread.threadId].A, newPost],
+        B: [...prev[currentThread.threadId].B, newPost]
+      }
+    }));
 
     setUserReplies(prev => ({
       ...prev,
@@ -617,7 +606,7 @@ export default function ToneEngagementExperiment() {
               </h1>
               <div className="flex items-center gap-4 mt-1">
                 <p className="text-sm text-gray-600 capitalize">Topic: {currentThread.topic}</p>
-                {!isComparisonMode && (
+                {!isComparisonMode && showMetrics && (
                   <p className="text-xs text-gray-500">
                     Avg Tone: {(currentPosts.reduce((sum, post) => sum + post.tau, 0) / currentPosts.length).toFixed(2)} |
                     Avg Engagement: {(currentPosts.reduce((sum, post) => sum + post.epsilon, 0) / currentPosts.length).toFixed(2)}
@@ -626,12 +615,6 @@ export default function ToneEngagementExperiment() {
               </div>
             </div>
             <div className="flex gap-3">
-              <button
-                onClick={() => setIsComparisonMode(!isComparisonMode)}
-                className="px-4 py-2 rounded-full font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
-                {isComparisonMode ? 'Single View' : 'Compare Views'}
-              </button>
               <button
                 onClick={handleNextThread}
                 disabled={!hasUserReplied || currentThreadIndex >= mockData.threads.length - 1}
@@ -645,6 +628,21 @@ export default function ToneEngagementExperiment() {
               </button>
             </div>
           </div>
+        </div>
+
+        <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-40">
+          <button
+            onClick={() => setShowMetrics(!showMetrics)}
+            className="px-4 py-2 rounded-full font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-lg"
+          >
+            {showMetrics ? 'Hide Metrics' : 'Show Metrics'}
+          </button>
+          <button
+            onClick={() => setIsComparisonMode(!isComparisonMode)}
+            className="px-4 py-2 rounded-full font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-lg"
+          >
+            {isComparisonMode ? 'Single View' : 'Compare Views'}
+          </button>
         </div>
 
         {isComparisonMode ? (
@@ -661,6 +659,7 @@ export default function ToneEngagementExperiment() {
               onToggleShowReplies={toggleShowReplies}
               isComparison={true}
               side="A"
+              showMetrics={showMetrics}
             />
             <ThreadView
               threadData={getVariantData(currentThread.threadId, 'B')}
@@ -674,6 +673,7 @@ export default function ToneEngagementExperiment() {
               onToggleShowReplies={toggleShowReplies}
               isComparison={true}
               side="B"
+              showMetrics={showMetrics}
             />
           </div>
         ) : (
@@ -688,6 +688,7 @@ export default function ToneEngagementExperiment() {
             onToggleShowMore={toggleShowMore}
             onToggleShowReplies={toggleShowReplies}
             isComparison={false}
+            showMetrics={showMetrics}
           />
         )}
 
@@ -696,6 +697,7 @@ export default function ToneEngagementExperiment() {
           onClose={() => setReplyChooser({ isOpen: false, parentId: null })}
           onSelect={handleSelectReply}
           options={getReplyOptions()}
+          showMetrics={showMetrics}
         />
       </div>
     </div>
